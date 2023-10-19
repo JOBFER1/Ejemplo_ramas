@@ -1,0 +1,36 @@
+pipeline{
+    agent any
+    tools{
+        maven 'MAVEN_3_8_6'
+        jdk 'JDK_11'
+    }
+    stages{
+//        stage('Checkout') {
+//            steps {
+//                git branch: 'temp', url: 'https://github.com/JOBFER1/Ejemplo_ramas.git'
+//            }
+//        }
+        stage ('Rama') {
+            steps {
+                bat 'mvn -v'
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Test y Jacoco') {
+            steps {
+                //junit 'target/surefire-reports/**/*.xml'
+                jacoco()
+            }
+        }
+        stage('SonarQube') {
+            steps{
+                withSonarQubeEnv(installationName: 'Sonar 10.2.1', credentialsId: 'Token-Sonar-10') {
+                    bat 'mvn sonar:sonar'
+                }
+            }
+        }
+        
+        
+    }
+}
